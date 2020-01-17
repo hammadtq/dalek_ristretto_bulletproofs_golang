@@ -22,3 +22,4 @@ Cargo.lock
 # Project binary
 go-rust
 .DS_Store/
+.DS_Store
