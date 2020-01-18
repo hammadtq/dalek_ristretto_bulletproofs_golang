@@ -1,5 +1,5 @@
 [package]
-name = "hello_ristretto"
+name = "dalek_rangeproofs"
 version = "0.0.1"
 
 [lib]
@@ -13,5 +13,4 @@ hex = "*"
 merlin = "1.3.0"
 bulletproofs = "*"
 bincode = "*"
-arrayref = "*"
 rand_os = "*"

@@ -1,8 +1,8 @@
 package main
 
 /*
-#cgo darwin LDFLAGS: -L./lib -lhello_ristretto
-#include "./lib/hello_ristretto.h"
+#cgo darwin LDFLAGS: -L./lib -ldalek_rangeproofs
+#include "./lib/dalek_rangeproofs.h"
 */
 import "C"
 

@@ -3,18 +3,18 @@ ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 all: library build
 
 clean:
-	rm -rf ./lib/hello/target
-	rm -f ./lib/hello/Cargo.lock ./lib/libhello_ristretto.dylib go-rust-ristretto
+	rm -rf ./lib/dalek_rangeproofs/target
+	rm -f ./lib/dalek_rangeproofs/Cargo.lock ./lib/librange_proofs.dylib dalek_rangeproofs
 
 library:
-	$(MAKE) -C lib/hello_ristretto build
+	$(MAKE) -C lib/dalek_rangeproofs build
 
 build:
-	cp lib/hello_ristretto/target/release/libhello_ristretto.dylib ./lib
-	go build -ldflags="-r $(ROOT_DIR)lib" -o go-rust-ristretto
+	cp lib/dalek_rangeproofs/target/release/libdalek_rangeproofs.dylib ./lib
+	go build -ldflags="-r $(ROOT_DIR)lib" -o dalek_rangeproofs
 
 
 run: build
-	./go-rust-ristretto
+	./dalek_rangeproofs
 
 

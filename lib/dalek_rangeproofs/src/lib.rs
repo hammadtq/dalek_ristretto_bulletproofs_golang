@@ -5,7 +5,6 @@ extern crate libc;
 extern crate rand;
 use rand::thread_rng;
 
-extern crate arrayref;
 extern crate merlin;
 
 use merlin::Transcript;
