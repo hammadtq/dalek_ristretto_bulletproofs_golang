@@ -4,14 +4,14 @@ extern crate curve25519_dalek;
 extern crate libc;
 extern crate rand;
 use rand::thread_rng;
-#[macro_use]
+
 extern crate arrayref;
 extern crate merlin;
 
 use merlin::Transcript;
 use curve25519_dalek::{ristretto::RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use libc::{size_t, uint64_t, uint8_t};
-use rand::{OsRng};
+use rand::rngs::OsRng;
 use std::slice;
 
 use bulletproofs::{BulletproofGens, PedersenGens, RangeProof};
@@ -53,8 +53,6 @@ pub extern "C" fn generate_ristretto_random(buf: *mut uint8_t, len: size_t) {
 pub extern "C" fn generate_ristretto_range_proof(
     vals:*const uint64_t,
     vals_len: size_t,
-    //blinding_factors: *const uint8_t,
-    //blinding_factors_len: size_t,
     proof_buf: *mut uint8_t,
     proof_buf_len: size_t,
     commitments_buf: *mut uint8_t,
@@ -67,7 +65,7 @@ pub extern "C" fn generate_ristretto_range_proof(
     };
 
     // The API takes blinding factors for the commitments.
-    let blindings: Vec<_> = (0..4).map(|_| Scalar::random(&mut thread_rng())).collect();
+    let blindings: Vec<_> = (0..8).map(|_| Scalar::random(&mut thread_rng())).collect();
     
     // Generators for Pedersen commitments.  These can be selected
     // independently of the Bulletproofs generators.
@@ -144,12 +142,4 @@ pub extern "C" fn verify_ristretto_range_proof(
         &bp_gens, &pc_gens, &mut transcript, &value_commitments, 64
     ).is_ok()
 
-}
-
-fn c_buf_to_32_bytes_array(buf: *const uint8_t,len: size_t)->[u8;32]{
-    let buffer = unsafe {
-        assert!(!buf.is_null());
-        slice::from_raw_parts(buf, len as usize)
-    };
-    array_ref![buffer,0,32].clone()
 }

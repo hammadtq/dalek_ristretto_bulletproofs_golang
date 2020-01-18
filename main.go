@@ -13,7 +13,7 @@ import (
 
 func main() {
 	//generateRistrettoPointTwo()
-	valuesVector := []int64{1, 1, 16, 56}
+	valuesVector := []int64{1, 1, 1, 1, 1, 1, 1, 1}
 	proof, commitments := GenerateBulletProofs(valuesVector)
 	fmt.Println("Proof is here:", proof)
 	fmt.Println("Commitments are here:", commitments)
@@ -47,7 +47,7 @@ func GenerateBulletProofs(values []int64) ([]byte, []byte) {
 	proofBufPtr := (*C.uchar)(unsafe.Pointer(&proofBuf[0]))
 	proofBufLen := C.size_t(len(proofBuf))
 
-	valueCommitmentsBuf := make([]byte, 168)
+	valueCommitmentsBuf := make([]byte, 336)
 	valueCommitmentsBufLen := C.size_t(len(valueCommitmentsBuf))
 	valueCommitPtr := (*C.uchar)(unsafe.Pointer(&valueCommitmentsBuf[0]))
 	C.generate_ristretto_range_proof(
