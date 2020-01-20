@@ -12,13 +12,20 @@ import (
 )
 
 func main() {
-	//generateRistrettoPointTwo()
-	valuesVector := []int64{1, 1, 1, 1, 1, 1, 1, 1}
-	proof, commitments := GenerateBulletProofs(valuesVector)
-	fmt.Println("Proof is here:", proof)
-	fmt.Println("Commitments are here:", commitments)
+	
+	var value int64 = 7
+	proofSingle, commitmentSingle := GenerateSingleBulletProof(value) 
+	fmt.Println("Single value Proof is here:", proofSingle)
+	fmt.Println("Single value Commitment is here:", commitmentSingle)
 
-	VerifyBulletProofs(proof, commitments)
+	VerifySingleBulletProof(proofSingle, commitmentSingle)
+
+	valuesVector := []int64{68, 71, 51, 78, 90, 16, 18, 1}
+	proofMul, commitmentsMul := GenerateMultipleBulletProofs(valuesVector)
+	fmt.Println("Multi-value Proof is here:", proofMul)
+	fmt.Println("Mult-value Commitments are here:", commitmentsMul)
+
+	VerifyMultipleBulletProofs(proofMul, commitmentsMul)
 }
 
 func generateRistrettoPoint() {
@@ -29,16 +36,50 @@ func generateRistrettoPoint() {
 	fmt.Printf("%v", buf)
 }
 
-func generateRistrettoPointTwo() {
-	buf := make([]byte, 32, 32)
-	ptr := (*C.char)(unsafe.Pointer(&buf[0]))
-	len := C.size_t(len(buf))
-	C.generate_ristretto_random(ptr, len)
-	fmt.Printf("%v", buf)
+// GenerateSingleBulletProof generates a range proof from dalek rust library using cgo
+func GenerateSingleBulletProof(value int64) ([]byte, []byte) {
+
+	valuePtr := (*C.ulonglong)(unsafe.Pointer(&value))
+
+	proofBuf := make([]byte, 700, 700)
+	proofBufPtr := (*C.uchar)(unsafe.Pointer(&proofBuf[0]))
+	proofBufLen := C.size_t(len(proofBuf))
+
+	valueCommitmentsBuf := make([]byte, 40)
+	valueCommitmentsBufLen := C.size_t(len(valueCommitmentsBuf))
+	valueCommitPtr := (*C.uchar)(unsafe.Pointer(&valueCommitmentsBuf[0]))
+	C.generate_ristretto_range_proof_single(
+		valuePtr,
+		proofBufPtr,
+		proofBufLen,
+		valueCommitPtr,
+		valueCommitmentsBufLen,
+	)
+	return proofBuf, valueCommitmentsBuf
+
 }
 
-// GenerateBulletProofs generates a range proof from dalek rust library using cgo
-func GenerateBulletProofs(values []int64) ([]byte, []byte) {
+// VerifySingleBulletProof verifies a given range proof from dalek rust library using cgo
+func VerifySingleBulletProof(proof []byte, commitments []byte) {
+
+	proofLen := C.size_t(len(proof))
+	proofPtr := (*C.uchar)(unsafe.Pointer(&proof[0]))
+
+	commitmentsLen := C.size_t(len(commitments))
+	commtimentsPtr := (*C.uchar)(unsafe.Pointer(&commitments[0]))
+
+	proofVerified := C.verify_ristretto_range_proof_single(
+		proofPtr,
+		proofLen,
+		commtimentsPtr,
+		commitmentsLen,
+	)
+
+	fmt.Println("Range Proof Verification result is:", proofVerified)
+}
+
+// GenerateMultipleBulletProofs generates a range proof from dalek rust library using cgo
+func GenerateMultipleBulletProofs(values []int64) ([]byte, []byte) {
 
 	valuesLen := C.size_t(len(values))
 	valuePtr := (*C.ulonglong)(unsafe.Pointer(&values[0]))
@@ -50,7 +91,7 @@ func GenerateBulletProofs(values []int64) ([]byte, []byte) {
 	valueCommitmentsBuf := make([]byte, 336)
 	valueCommitmentsBufLen := C.size_t(len(valueCommitmentsBuf))
 	valueCommitPtr := (*C.uchar)(unsafe.Pointer(&valueCommitmentsBuf[0]))
-	C.generate_ristretto_range_proof(
+	C.generate_ristretto_range_proof_multiple(
 		valuePtr,
 		valuesLen,
 		proofBufPtr,
@@ -62,8 +103,8 @@ func GenerateBulletProofs(values []int64) ([]byte, []byte) {
 
 }
 
-// VerifyBulletProofs generates a range proof from dalek rust library using cgo
-func VerifyBulletProofs(proof []byte, commitments []byte) {
+// VerifyMultipleBulletProofs verifies a given range proof from dalek rust library using cgo
+func VerifyMultipleBulletProofs(proof []byte, commitments []byte) {
 
 	proofLen := C.size_t(len(proof))
 	proofPtr := (*C.uchar)(unsafe.Pointer(&proof[0]))
@@ -71,7 +112,7 @@ func VerifyBulletProofs(proof []byte, commitments []byte) {
 	commitmentsLen := C.size_t(len(commitments))
 	commtimentsPtr := (*C.uchar)(unsafe.Pointer(&commitments[0]))
 
-	proofVerified := C.verify_ristretto_range_proof(
+	proofVerified := C.verify_ristretto_range_proof_multiple(
 		proofPtr,
 		proofLen,
 		commtimentsPtr,
