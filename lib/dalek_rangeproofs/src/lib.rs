@@ -154,15 +154,16 @@ pub extern "C" fn generate_ristretto_range_proof_multiple(
     };
 
     // The API takes blinding factors for the commitments.
-    let blindings: Vec<_> = (0..8).map(|_| Scalar::random(&mut thread_rng())).collect();
+    let blindings: Vec<_> = (0..vals_len).map(|_| Scalar::random(&mut thread_rng())).collect();
     
     // Generators for Pedersen commitments.  These can be selected
     // independently of the Bulletproofs generators.
     let pc_gens = PedersenGens::default();
     
     // Generators for Bulletproofs, valid for proofs up to bitsize 64
-    // and aggregation size up to 16.
-    let bp_gens = BulletproofGens::new(32, 16);
+    // and aggregation size is dyanmic according to passed values
+    let aggregation_size = vals_len as usize;
+    let bp_gens = BulletproofGens::new(32, aggregation_size);
     
     let mut transcript = Transcript::new(b"AggregatedRangeProof");
 

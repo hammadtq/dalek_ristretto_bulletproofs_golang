@@ -20,7 +20,12 @@ func main() {
 
 	VerifySingleBulletProof(proofSingle, commitmentSingle)
 
-	valuesVector := []int64{68, 71, 51, 78, 90, 16, 18, 1}
+	valuesVector := []int64{68, 71, 51, 78, 90, 16, 18}
+	// We need to pass in a value vector in power of 2
+	if !IsPowerOfTwo(len(valuesVector)){
+		valuesVector = append(valuesVector, 0)
+	}
+
 	proofMul, commitmentsMul := GenerateMultipleBulletProofs(valuesVector)
 	fmt.Println("Multi-value Proof is here:", proofMul)
 	fmt.Println("Mult-value Commitments are here:", commitmentsMul)
@@ -120,4 +125,9 @@ func VerifyMultipleBulletProofs(proof []byte, commitments []byte) {
 	)
 
 	fmt.Println("Range Proof Verification result is:", proofVerified)
+}
+
+// IsPowerOfTwo checks if a given number is in the power of 2
+func IsPowerOfTwo(x int) bool{
+    return (x != 0) && ((x & (x - 1)) == 0);
 }
