@@ -1,4 +1,4 @@
-# dalek_ristretto_bulletproofs_in_golang
+# dalek_ristretto_bulletproofs_golang
 
 CGO bridge for using [dalek-bulletproofs](https://github.com/dalek-cryptography/bulletproofs) rangeproofs in golang.
 
