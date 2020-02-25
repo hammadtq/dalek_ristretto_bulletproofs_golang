@@ -18,7 +18,9 @@ func main() {
 	fmt.Println("Single value Proof is here:", proofSingle)
 	fmt.Println("Single value Commitment is here:", commitmentSingle)
 
-	VerifySingleBulletProof(proofSingle, commitmentSingle)
+	singleProofVerified := VerifySingleBulletProof(proofSingle, commitmentSingle)
+
+	fmt.Println("Single Range Proof Verification result is:", singleProofVerified)
 
 	valuesVector := []int64{68, 71, 51, 78, 90, 16, 18}
 	// We need to pass in a value vector in power of 2
@@ -30,7 +32,9 @@ func main() {
 	fmt.Println("Multi-value Proof is here:", proofMul)
 	fmt.Println("Mult-value Commitments are here:", commitmentsMul)
 
-	VerifyMultipleBulletProofs(proofMul, commitmentsMul)
+	mulProofVerified := VerifyMultipleBulletProofs(proofMul, commitmentsMul)
+
+	fmt.Println("Multiple Range Proof Verification result is:", mulProofVerified)
 }
 
 func generateRistrettoPoint() {
@@ -65,7 +69,7 @@ func GenerateSingleBulletProof(value int64) ([]byte, []byte) {
 }
 
 // VerifySingleBulletProof verifies a given range proof from dalek rust library using cgo
-func VerifySingleBulletProof(proof []byte, commitments []byte) {
+func VerifySingleBulletProof(proof []byte, commitments []byte) bool {
 
 	proofLen := C.size_t(len(proof))
 	proofPtr := (*C.uchar)(unsafe.Pointer(&proof[0]))
@@ -80,7 +84,10 @@ func VerifySingleBulletProof(proof []byte, commitments []byte) {
 		commitmentsLen,
 	)
 
-	fmt.Println("Range Proof Verification result is:", proofVerified)
+	if proofVerified == true{
+		return true
+	}
+	return false
 }
 
 // GenerateMultipleBulletProofs generates a range proof from dalek rust library using cgo
@@ -109,7 +116,7 @@ func GenerateMultipleBulletProofs(values []int64) ([]byte, []byte) {
 }
 
 // VerifyMultipleBulletProofs verifies a given range proof from dalek rust library using cgo
-func VerifyMultipleBulletProofs(proof []byte, commitments []byte) {
+func VerifyMultipleBulletProofs(proof []byte, commitments []byte) bool {
 
 	proofLen := C.size_t(len(proof))
 	proofPtr := (*C.uchar)(unsafe.Pointer(&proof[0]))
@@ -124,7 +131,10 @@ func VerifyMultipleBulletProofs(proof []byte, commitments []byte) {
 		commitmentsLen,
 	)
 
-	fmt.Println("Range Proof Verification result is:", proofVerified)
+	if proofVerified == true{
+		return true
+	}
+	return false
 }
 
 // IsPowerOfTwo checks if a given number is in the power of 2
